@@ -1,179 +1,184 @@
+<p align="right">
+  <a href="README.md">Українська</a> · <a href="README.ru.md">Русский</a> · <b>English</b>
+</p>
+
+<p align="center">
+  <img src="assets/eco-piglets-hero.svg" alt="Industrial Ventilation Monitoring & Alerting System" width="100%" />
+</p>
+
 # Industrial Ventilation Monitoring & Alerting System
 
-[Українська](README.md) · [Русский](README.ru.md) · **English**
+**ECO Piglets** is a local read-only monitoring agent for farm ventilation, temperature and alarm conditions. It modernizes an existing VengSystem setup without interfering with equipment control: it reads real log files, normalizes the data, keeps history, generates alarms and presents the current state in a clean web UI.
 
-> **Internal project name:** VengMonitor  
-> **Status:** used in a real monitoring workflow  
-> **Source code:** private
+<p>
+  <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white" alt="Flask" />
+  <img src="https://img.shields.io/badge/Monitoring-2563EB" alt="Monitoring" />
+  <img src="https://img.shields.io/badge/Alerting-CF222E" alt="Alerting" />
+  <img src="https://img.shields.io/badge/Telegram-26A5E4?logo=telegram&logoColor=white" alt="Telegram" />
+  <img src="https://img.shields.io/badge/Local--first-1F883D" alt="Local first" />
+  <img src="https://img.shields.io/badge/Source-private-BC4C00" alt="Private source" />
+</p>
 
-A monitoring system for industrial ventilation created to modernize an existing legacy solution without interfering with equipment control.
+> [!IMPORTANT]
+> This is a **public portfolio case study**, not the production source repository. The implementation, site configuration and credentials remain private.
 
-Instead of replacing the original system, the application reads its actual log files, converts them into structured data, monitors both room conditions and the data collection process itself, creates durable alarm events, and delivers information through a web interface and Telegram.
+| | |
+|---|---|
+| **Solution type** | Local monitoring & alerting agent |
+| **Data source** | VengSystem log files |
+| **My role** | Process analysis, architecture, AI-assisted implementation, UI/UX, runtime validation |
+| **Core idea** | Read-only modernization layer on top of a legacy system |
+| **Alerts** | Local sound + Telegram |
+| **Status** | Used in a real monitoring workflow |
 
 ---
 
-## Problem
+## 🖥️ Product in Action
 
-A specialized ventilation control system was already operating on site, but its native interface did not provide the required level of remote monitoring and reliable alerting for critical conditions.
+These are **real application screens**, not mockups: current status, historical charts, the measurement log and local agent settings.
 
-The goal was to build a separate read-only monitoring layer that:
+<p align="center">
+  <img src="assets/eco-piglets-showcase.webp" alt="ECO Piglets real application screens" width="100%" />
+</p>
 
-- does not modify equipment control parameters;
-- works on top of the existing system;
+<p align="center"><sub>Overview · Monitoring · Log · Settings — one local interface for actual VengSystem data.</sub></p>
+
+---
+
+## 🎯 The problem
+
+The site already had a specialized ventilation-control system, but its standard interface did not provide the required remote visibility or reliable notifications for critical conditions.
+
+The goal was to add a separate monitoring layer that:
+
+- **does not change equipment control parameters**;
+- works on top of the existing legacy system;
 - automatically reads its logs;
+- shows current values by room;
+- stores history;
 - detects abnormal conditions;
-- stores history and alarm state;
-- works across multiple computers;
-- does not lose short-lived alarms between polling cycles;
-- continues to provide meaningful diagnostics when connectivity is unstable.
+- provides a local sound alarm;
+- can forward events and periodic reports to Telegram;
+- keeps core monitoring available even without internet access.
 
----
+## 💡 The solution
 
-## Solution architecture
+I designed a separate read-only monitoring layer. The original system remains the source of technical data, while ECO Piglets turns its logs into a practical monitoring workflow.
 
 ```mermaid
 flowchart LR
-    A[Legacy ventilation system] --> B[Log files]
-    B --> C[SERV: parser & collector]
-    C --> D[State / history]
-    C --> E[Alarm engine]
-    E --> F[raised / cleared event log]
-    D --> G[Local web UI]
-    F --> H[Protected API / tunnel]
-    H --> I[Mirror / gateway]
-    I --> J[Remote web access]
-    I --> K[Telegram alerts]
-    I --> L[Connection monitoring]
+    A[VengSystem / legacy controller] --> B[Log files]
+    B --> C[SERV / local agent]
+    C --> D[Parser + normalized state]
+    D --> E[History]
+    D --> F[Alarm engine]
+    F --> G[raised / cleared events]
+    D --> H[Local web UI]
+    F --> I[Local sound]
+    G --> J[Protected API / Mirror]
+    J --> K[Telegram notifications]
+    J --> L[Remote access / connection monitoring]
 ```
 
-The system is split into two nodes.
+### Local-first design
 
-### SERV — node near the equipment
-
-SERV reads and parses the original system logs, stores the current snapshot, history and active alarms, and creates a durable `raised` / `cleared` event stream.
-
-### Mirror / Gateway — remote node
-
-The remote node receives prepared state and events from SERV, exposes remote access to the interface, checks availability of the primary node, and forwards notifications to Telegram.
-
-Mirror does not independently re-evaluate process alarms. SERV remains the source of truth for alarm logic, which reduces the risk of state divergence between nodes.
+The critical path — log reading, state analysis, dashboard and local sound alerts — runs on the PC next to the equipment. Internet access is needed for external notifications, not for the core monitoring loop.
 
 ---
 
-## Implemented functionality
+## ✅ Implemented
 
 ### Data collection and normalization
 
-The system automatically identifies the current log file, reads the latest measurements and converts the legacy format into structured room-level data.
+The system locates the active log, reads the latest complete measurements and converts the legacy format into structured room-level data.
 
-### Process alarm detection
+### Alarm detection
 
-The monitoring logic detects conditions including:
+Implemented checks include:
 
 - ventilation at `0%`;
-- temperature above a per-room threshold;
-- missing temperature or ventilation values;
+- room temperature above an individual threshold;
+- missing temperature or ventilation data;
 - incomplete log rows;
 - stale logs when the original system stops updating data.
 
-### Durable `raised` / `cleared` events
+### Persistent `raised / cleared` events
 
-An alarm is not treated as a simple current-state flag. The system creates durable events for both alarm activation and recovery.
+An alarm is not stored only as a current-state flag. Start and end transitions are persisted as separate events, so a short incident is not lost between remote polling cycles.
 
-This prevents short incidents from disappearing when they begin and end between two polling cycles of the remote node.
+### Message deduplication
 
-### Notification deduplication
+The Mirror node stores identifiers for events that have already been delivered, preventing repeated polling or restarts from sending the same alert again.
 
-Mirror stores identifiers of already forwarded events, so repeated polling does not produce duplicate Telegram notifications.
+### Connection monitoring
 
-### Connectivity monitoring
+A short network interruption is not treated as an immediate failure. Connectivity is considered lost only after a configurable grace period of failed checks; recovery before that point resets the timer.
 
-A short network interruption is not immediately considered an incident. A connection-loss event is generated only after a configured period of failed checks; recovery before that threshold resets the timer.
+### Web UI
 
-This reduces alert noise caused by brief network drops.
+The interface provides current room status, temperature and ventilation values, active alarms, historical charts, a complete measurement log and local settings for the data source, sound alerts and reports.
 
-### Web interface
+### Telegram and local sound
 
-The interface exposes current measurements, historical data, active alarms and room settings. Room display names and monitoring thresholds can be configured independently.
-
-### Telegram and periodic reports
-
-In addition to incident notifications, the system can send scheduled status reports with current measurements or temperature charts.
-
-### Local alerting
-
-The computer near the equipment can also play a local sound notification so that a critical event remains noticeable without an open browser.
+In addition to alarm notifications, the system can send periodic informational reports. The local PC provides a repeating sound alarm with a temporary mute option.
 
 ---
 
-## Reliability in a real environment
+## 🧱 Two-node architecture and source of truth
 
-The project required more than writing a parser. It had to account for the behavior of a real legacy system:
+**SERV** runs near the equipment. It reads logs, stores snapshot/history, evaluates alarms and produces a persistent event log.
 
-- log files may be written non-atomically;
-- the latest row may be incomplete;
-- network connectivity may temporarily disappear;
-- the local node IP may change;
-- the remote node may poll less frequently than a short alarm lasts;
-- notifications must not be duplicated after retries or restarts.
+**Mirror / Gateway** receives the prepared state and events, provides remote access, monitors SERV availability and delivers Telegram notifications.
 
-For that reason, the architecture explicitly includes durable state, an event journal, deduplication, data freshness checks and recovery-oriented behavior.
+The Mirror **does not re-evaluate process data**. SERV remains the source of truth for alarm logic, reducing the risk of inconsistent results across nodes.
 
 ---
 
-## My role
+## 🛡️ Reliability in a real environment
 
-I analyzed the actual data format of the existing system and designed a separate read-only monitoring layer around the legacy solution.
+The architecture accounts for imperfect production conditions:
 
-My responsibilities included:
+- logs may be written non-atomically;
+- the last row may be incomplete;
+- a file may stop updating;
+- the local network may briefly disappear;
+- the local IP may change;
+- remote polling may be slower than a short incident;
+- retries must not produce duplicate alerts.
 
-- problem definition and decomposition;
-- two-node architecture;
-- state and alarm model;
-- log parsing;
-- alarm rules;
-- web interface;
-- communication between machines;
-- Telegram notification flow;
-- duplicate and short-network-failure protection;
-- testing against real logs and the real operating environment;
-- refining logic after false-positive behavior was observed.
-
-Development was performed in an AI-assisted workflow: I defined requirements and architecture, validated behavior on real data and hardware, analyzed failures and made decisions about changes, while using LLMs to accelerate implementation and code analysis.
+For this reason the system includes freshness checks, persistent events, deduplication, a connection grace period and recovery-oriented behavior.
 
 ---
 
-## Technology context
+## 👤 My role
 
-- Python
-- Flask
-- JavaScript / HTML / CSS
-- REST-style API
-- file-based state and history storage
-- Telegram integration
-- Windows automation
-- LAN / network integration
-- background monitoring and alerting
-- runtime diagnostics
+I analyzed the actual legacy data format and designed a separate read-only monitoring layer around it.
+
+My responsibilities included problem decomposition, SERV + Mirror architecture, state and event modeling, alarm rules, log parsing, web UI, communication between two computers, Telegram integration, protection against duplicate events and short network outages, testing on real logs and adjusting logic after false positives were observed.
+
+Development used an **AI-assisted workflow**: I defined requirements and architecture, validated actual runtime behavior on real data and decided which changes to accept or revise, using LLMs to accelerate implementation and code analysis.
 
 ---
 
-## Result
+## 🛠️ Technology Stack
 
-The existing ventilation system gained a separate modern monitoring layer without modification of its control logic.
-
-The workflow changed from manual log inspection to:
-
-**legacy logs → structured data → state monitoring → durable events → web / Telegram → history and diagnostics.**
-
-This case demonstrates work at the intersection of software, legacy integration, networking infrastructure and real equipment.
+`Python` · `Flask` · `JavaScript` · `HTML/CSS` · `REST-style API` · `Telegram` · `Windows` · `LAN integration` · `background monitoring` · `runtime diagnostics`
 
 ---
 
-## Source availability
+## 🏆 Result
 
-The working source repository is **private** and is not distributed through this portfolio repository.
+The existing ventilation system gained a modern monitoring layer **without changing its control logic**.
 
-This repository contains only the case study. It does not include application source code, site-specific configuration, credentials or distributable builds.
+**Legacy logs → structured state → alarm engine → persistent events → web / sound / Telegram → history & diagnostics**
 
-For recruitment or technical interviews, I can demonstrate the system and discuss architecture, monitoring logic and engineering decisions without publishing the private implementation.
+This case demonstrates work at the intersection of software, legacy integration, network infrastructure and real equipment, with reliability treated as part of the product rather than an afterthought.
+
+---
+
+## 🎥 Demo / Source availability
+
+The production source repository is **private**. This repository contains only the portfolio case study, screenshots and architecture description.
+
+For a technical interview, I can demonstrate the system and discuss the monitoring logic, event model and reliability decisions without publishing the production source code.

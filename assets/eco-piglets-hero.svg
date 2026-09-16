@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="480" viewBox="0 0 1600 480">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#0f172a"/><stop offset="0.62" stop-color="#111827"/><stop offset="1" stop-color="#172554"/>
+  </linearGradient>
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8b1e5a"/><stop offset="1" stop-color="#2563eb"/>
+  </linearGradient>
+</defs>
+<rect width="1600" height="480" rx="28" fill="url(#bg)"/>
+<circle cx="125" cy="108" r="52" fill="#fff" opacity="0.98"/>
+<circle cx="125" cy="108" r="35" fill="#8b1e5a"/>
+<path d="M105 113c24-31 55-22 61-5-12-6-20-4-28 3 6 2 12 7 14 13-16 15-38 13-47-11z" fill="#fff"/>
+<text x="205" y="94" fill="#fff" font-family="Segoe UI,Arial,sans-serif" font-size="50" font-weight="700">Industrial Ventilation Monitoring</text>
+<text x="205" y="151" fill="#cbd5e1" font-family="Segoe UI,Arial,sans-serif" font-size="27">ECO Piglets · local monitoring &amp; alerting agent</text>
+<text x="205" y="208" fill="#94a3b8" font-family="Segoe UI,Arial,sans-serif" font-size="21">Read-only modernization layer for VengSystem logs · alarms · history · Telegram</text>
+
+<g transform="translate(195,292)" font-family="Segoe UI,Arial,sans-serif">
+  <rect x="0" y="0" width="230" height="82" rx="14" fill="#1e293b" stroke="#475569"/>
+  <text x="115" y="33" text-anchor="middle" fill="#fff" font-size="20" font-weight="600">VengSystem logs</text>
+  <text x="115" y="59" text-anchor="middle" fill="#94a3b8" font-size="15">legacy data source</text>
+  <text x="256" y="50" fill="#60a5fa" font-size="32">→</text>
+  <rect x="305" y="0" width="230" height="82" rx="14" fill="#1e293b" stroke="#475569"/>
+  <text x="420" y="33" text-anchor="middle" fill="#fff" font-size="20" font-weight="600">Local agent</text>
+  <text x="420" y="59" text-anchor="middle" fill="#94a3b8" font-size="15">parse + normalize</text>
+  <text x="561" y="50" fill="#60a5fa" font-size="32">→</text>
+  <rect x="610" y="0" width="230" height="82" rx="14" fill="#1e293b" stroke="#475569"/>
+  <text x="725" y="33" text-anchor="middle" fill="#fff" font-size="20" font-weight="600">Alarm engine</text>
+  <text x="725" y="59" text-anchor="middle" fill="#94a3b8" font-size="15">state + events</text>
+  <text x="866" y="50" fill="#60a5fa" font-size="32">→</text>
+  <rect x="915" y="0" width="270" height="82" rx="14" fill="#1e293b" stroke="#475569"/>
+  <text x="1050" y="31" text-anchor="middle" fill="#fff" font-size="19" font-weight="600">Dashboard · Sound · Telegram</text>
+  <text x="1050" y="59" text-anchor="middle" fill="#94a3b8" font-size="15">local-first outputs</text>
+</g>
+<rect x="1240" y="75" width="220" height="52" rx="26" fill="url(#accent)"/>
+<text x="1350" y="108" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial,sans-serif" font-size="18" font-weight="700">REAL-WORLD SYSTEM</text>
+<text x="1395" y="428" text-anchor="end" fill="#64748b" font-family="Segoe UI,Arial,sans-serif" font-size="17">Portfolio case study · source code private</text>
+</svg>
