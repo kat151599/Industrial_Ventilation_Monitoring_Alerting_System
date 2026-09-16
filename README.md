@@ -39,7 +39,7 @@
 Нижче — **реальні екрани системи**, а не mockup: огляд поточного стану, історичні графіки, повний журнал вимірювань і локальні налаштування агента.
 
 <p align="center">
-  <img src="assets/eco-piglets-showcase.webp" alt="ECO Piglets real application screens" width="100%" />
+  <img src="assets/eco-piglets-showcase.svg" alt="ECO Piglets real application screens" width="100%" />
 </p>
 
 <p align="center"><sub>Overview · Monitoring · Log · Settings — один локальний інтерфейс для контролю фактичних даних VengSystem.</sub></p>
