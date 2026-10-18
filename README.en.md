@@ -23,14 +23,17 @@
 > [!IMPORTANT]
 > This is a **public portfolio case study**, not the production source repository. The implementation, site configuration and credentials remain private.
 
+## Project at a glance
+
 | | |
 |---|---|
-| **Solution type** | Local monitoring & alerting agent |
-| **Data source** | VengSystem log files |
-| **My role** | Process analysis, architecture, AI-assisted implementation, UI/UX, runtime validation |
-| **Core idea** | Read-only modernization layer on top of a legacy system |
-| **Alerts** | Local sound + Telegram |
-| **Status** | Used in a real monitoring workflow |
+| **Business problem** | An existing ventilation control system lacked the remote visibility and actionable alarms required by the site. |
+| **Solution** | A separate read-only agent reads VengSystem logs, stores history, persists incidents and sends local and Telegram alerts. |
+| **Working demonstration** | [Real monitoring screens](assets/eco-piglets-showcase.webp). Live walkthrough on request; production monitoring is not publicly accessible. |
+| **Result** | Monitoring and alerts were added without changing equipment controls; local monitoring continues without internet access. |
+| **Technical implementation** | Python, Flask, log parsing, persistent raised/cleared events, event deduplication, SERV/Mirror, Telegram. |
+| **Project status** | Used in a real monitoring workflow; production code remains private. |
+| **My contribution** | Legacy-data analysis, two-node architecture, alarm rules, log-based testing and false-positive investigation. |
 
 ---
 
@@ -157,7 +160,7 @@ I analyzed the actual legacy data format and designed a separate read-only monit
 
 My responsibilities included problem decomposition, SERV + Mirror architecture, state and event modeling, alarm rules, log parsing, web UI, communication between two computers, Telegram integration, protection against duplicate events and short network outages, testing on real logs and adjusting logic after false positives were observed.
 
-Development used an **AI-assisted workflow**: I defined requirements and architecture, validated actual runtime behavior on real data and decided which changes to accept or revise, using LLMs to accelerate implementation and code analysis.
+*Development process: LLM tools assisted with implementation and code analysis; requirements, architecture decisions and acceptance testing remained my responsibility.*
 
 ---
 
